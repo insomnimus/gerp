@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"gerp/cmd"
+	"github.com/insomnimus/gerp/cmd"
 	"log"
 	"os"
 	"runtime"

@@ -1,4 +1,4 @@
-module gerp
+module github.com/insomnimus/gerp
 
 go 1.17
 
