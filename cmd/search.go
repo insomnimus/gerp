@@ -86,7 +86,7 @@ func (c *Cmd) search(name string) {
 
 	var (
 		scanner        = bufio.NewScanner(f)
-		i       uint32 = 1
+		i       uint32
 		s       string
 		ok      bool
 		isFirst = true
