@@ -126,12 +126,14 @@ LOOP:
 			}
 			continue
 		}
+
 		if cmd.Pattern == "" {
 			cmd.Pattern = a
 		} else {
 			cmd.Files = append(cmd.Files, a)
 		}
 	}
+
 	if cmd.Pattern == "" {
 		return nil, fmt.Errorf("the pattern is missing")
 	}

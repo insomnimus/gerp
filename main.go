@@ -29,6 +29,8 @@ options are:
 	`)
 	if runtime.GOOS == "windows" {
 		fmt.Println("file names can be glob patterns supporting double star")
+	} else {
+		fmt.Println("\t--glob: specify a glob pattern to use")
 	}
 	os.Exit(0)
 }
@@ -46,7 +48,7 @@ func main() {
 	if c.FlagH {
 		showHelp()
 	}
-
+	// fmt.Println(c.Pattern)
 	// check if stdin is piped
 	if fi, err := os.Stdin.Stat(); err == nil {
 		if (fi.Mode() & os.ModeCharDevice) == 0 {

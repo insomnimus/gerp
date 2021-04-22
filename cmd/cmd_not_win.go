@@ -5,6 +5,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/mattn/go-zglob"
 	"strings"
 )
 
@@ -95,6 +96,16 @@ LOOP:
 				setflag('m', true, a)
 			case "--match=false":
 				setflag('m', false, a)
+			case "--glob":
+				if i+1 >= len(args) {
+					return nil, fmt.Errorf("the --glob flag is set but the value is missing")
+				}
+				i++
+				fs, err := zglob.Glob(args[i])
+				if err != nil {
+					return nil, err
+				}
+				cmd.Files = append(cmd.Files, fs...)
 			case "--pattern":
 				if i+1 >= len(args) {
 					return nil, fmt.Errorf("%s flag is set but the value is missing", a)
@@ -105,6 +116,14 @@ LOOP:
 				i++
 				cmd.Pattern = args[i]
 			default:
+				if strings.HasPrefix(a, "--glob=") {
+					fs, err := zglob.Glob(strings.TrimPrefix(a, "--glob="))
+					if err != nil {
+						return nil, err
+					}
+					cmd.Files = append(cmd.Files, fs...)
+					continue
+				}
 				if strings.HasPrefix(a, "--pattern=") {
 					if cmd.Pattern != "" {
 						cmd.Files = append(cmd.Files, cmd.Pattern)

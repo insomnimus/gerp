@@ -1,9 +1,12 @@
 package cmd
 
-import "regexp"
+import (
+	"regexp"
+	//"fmt"
+)
 
 var (
-	reFlag = regexp.MustCompile(`^\-[mvidn]+$`)
+	reFlag = regexp.MustCompile(`^\-[mvidqn]+$`)
 )
 
 type Cmd struct {
