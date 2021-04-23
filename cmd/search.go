@@ -18,7 +18,11 @@ func (c *Cmd) Run() error {
 		regexp.MustCompile(`[^\w\d_\s-]`).MatchString(c.Pattern) {
 		c.isReg = true
 		var err error
-		c.re, err = regexp.Compile(c.Pattern)
+		if c.FlagI {
+			c.re, err = regexp.Compile("(?i)" + c.Pattern)
+		} else {
+			c.re, err = regexp.Compile(c.Pattern)
+		}
 		if err != nil {
 			return err
 		}
@@ -85,7 +89,7 @@ func (c *Cmd) search(name string) {
 	defer f.Close()
 
 	var (
-		scanner        = bufio.NewScanner(f)
+		scanner = bufio.NewScanner(f)
 		i       uint32
 		s       string
 		ok      bool
@@ -165,18 +169,31 @@ func (c *Cmd) eval(s string) (str string, ok bool) {
 	return text, text != ""
 }
 
-func (c *Cmd) RunStdin() {
+func (c *Cmd) RunStdin() error {
+	if c.FlagI ||
+		regexp.MustCompile(`[^\w\d_\s-]`).MatchString(c.Pattern) {
+		c.isReg = true
+		var err error
+		if c.FlagI {
+			c.re, err = regexp.Compile("(?i)" + c.Pattern)
+		} else {
+			c.re, err = regexp.Compile(c.Pattern)
+		}
+		if err != nil {
+			return err
+		}
+	}
 	var (
-		scanner        = bufio.NewScanner(os.Stdin)
-		i       uint32 = 1
+		scanner = bufio.NewScanner(os.Stdin)
+		i       uint32
 		s       string
 		ok      bool
 	)
-
+	c.FlagN = true
 	for scanner.Scan() {
 		i++
 		if scanner.Err() != nil {
-			return
+			return nil
 		}
 		s, ok = c.eval(scanner.Text())
 		if !ok {
@@ -193,4 +210,5 @@ func (c *Cmd) RunStdin() {
 			fmt.Println(s)
 		}
 	}
+	return nil
 }

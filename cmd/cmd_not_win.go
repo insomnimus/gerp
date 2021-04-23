@@ -17,7 +17,8 @@ func Parse(args []string) (*Cmd, error) {
 	set := make(map[rune]struct{})
 	var a string
 	cmd := Cmd{
-		Files: make([]string, 0, len(args)-1),
+		Files:            make([]string, 0, len(args)-1),
+		filesAreFiltered: true,
 	}
 	setflag := func(c rune, b bool, s string) {
 		if _, ok := set[c]; !ok {
@@ -105,6 +106,7 @@ LOOP:
 				if err != nil {
 					return nil, err
 				}
+				cmd.filesareFiltered = false
 				cmd.Files = append(cmd.Files, fs...)
 			case "--pattern":
 				if i+1 >= len(args) {
@@ -121,6 +123,7 @@ LOOP:
 					if err != nil {
 						return nil, err
 					}
+					cmd.filesAreFiltered = false
 					cmd.Files = append(cmd.Files, fs...)
 					continue
 				}
