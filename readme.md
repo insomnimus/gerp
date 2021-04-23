@@ -63,6 +63,7 @@ manual:
 # How fast are we talking about?
 
 Here's a small test comparing gerp with ripgrep, by no means this is how you should bench and compare stuff though.
+Note that, ripgreps globbing library may be the culprit here, overall i still believe ripgrep is faster.
 
 ```
 /home> $g=measure-command{gerp --hidden --quiet 'package\s[main]{4}' **/*.go}
