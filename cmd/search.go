@@ -111,7 +111,7 @@ func (c *Cmd) search(name string) {
 				fmt.Printf("# %s\n", name)
 			}
 			if !c.FlagV {
-				fmt.Printf("%-4d:    %s\n", i, s)
+				fmt.Printf("%-4d:  %s\n", i, s)
 			} else {
 				fmt.Println(s)
 			}

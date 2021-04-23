@@ -8,7 +8,7 @@ import (
 	"runtime"
 )
 
-const version = "0.1.2"
+const version = "0.1.3"
 
 func showAbout() {
 	fmt.Printf("gerp v%s, match regular expressions\nrun with --help for the usage\n", version)
