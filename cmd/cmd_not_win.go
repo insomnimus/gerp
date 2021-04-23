@@ -134,12 +134,7 @@ LOOP:
 					cmd.Pattern = strings.TrimPrefix(a, "--pattern")
 					continue
 				}
-
-				if cmd.Pattern == "" {
-					cmd.Pattern = a
-				} else {
-					cmd.Files = append(cmd.Files, a)
-				}
+				return nil, fmt.Errorf("unknown command line option %q", a)
 			}
 			continue
 		}
