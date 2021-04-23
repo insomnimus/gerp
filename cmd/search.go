@@ -11,7 +11,9 @@ import (
 	"strings"
 )
 
-var reHidden = regexp.MustCompile(`\a\.|[\\/]\.`)
+var (
+	reHidden = regexp.MustCompile(`\a\.|[\\/]\.`)
+)
 
 func (c *Cmd) Run() error {
 	if c.FlagI ||
@@ -72,6 +74,13 @@ func (c *Cmd) worker(jobs <-chan string, results chan<- struct{}) {
 }
 
 func (c *Cmd) search(name string) {
+	// do not read exe, object, bin files
+	if !c.filesAreFiltered && (strings.HasSuffix(name, ".exe") ||
+		strings.HasSuffix(name, ".bin") ||
+		strings.HasSuffix(name, ".o") ||
+		strings.HasSuffix(name, ".a")) {
+		return
+	}
 	// do not read if file is hidden
 	if !c.filesAreFiltered && !c.FlagD && reHidden.MatchString(name) {
 		return
