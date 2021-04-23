@@ -106,7 +106,7 @@ LOOP:
 				if err != nil {
 					return nil, err
 				}
-				cmd.filesareFiltered = false
+				cmd.filesAreFiltered = false
 				cmd.Files = append(cmd.Files, fs...)
 			case "--pattern":
 				if i+1 >= len(args) {
