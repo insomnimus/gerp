@@ -29,7 +29,7 @@ func (c *Cmd) Run() error {
 	}
 	if len(c.Files) == 0 {
 		var err error
-		c.Files, err = collectFiles("./", c.FlagD)
+		c.Files, err = collectFiles(".", c.FlagD)
 		if err != nil {
 			return err
 		}
@@ -108,7 +108,7 @@ func (c *Cmd) search(name string) {
 		if !c.FlagN {
 			if isFirst {
 				isFirst = false
-				fmt.Printf("--%s--\n", name)
+				fmt.Printf("# %s\n", name)
 			}
 			if !c.FlagV {
 				fmt.Printf("%-4d:    %s\n", i, s)
