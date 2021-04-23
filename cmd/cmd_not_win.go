@@ -1,5 +1,4 @@
 //go:build !windows
-// +build !windows
 
 package cmd
 
@@ -78,6 +77,8 @@ LOOP:
 				setflag('q', false, a)
 			case "-h", "--help":
 				return &Cmd{FlagH: true}, nil
+			case "--version":
+				return &Cmd{FlagVersion: true}, nil
 			case "--":
 				cmd.Files = append(cmd.Files, args[i+1:]...)
 				break LOOP

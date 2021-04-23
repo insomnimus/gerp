@@ -10,9 +10,10 @@ var (
 )
 
 type Cmd struct {
-	FlagH, FlagI, FlagD, FlagM, FlagV, FlagQ, FlagN bool
-	Files                                           []string
-	Pattern                                         string
+	FlagI, FlagD, FlagM, FlagV, FlagQ, FlagN bool
+	FlagVersion, FlagH                       bool
+	Files                                    []string
+	Pattern                                  string
 
 	isReg            bool
 	filesAreFiltered bool

@@ -8,8 +8,10 @@ import (
 	"runtime"
 )
 
+const version = "0.1.0"
+
 func showAbout() {
-	fmt.Println("gerp, match regular expressions\nrun with --help for the usage")
+	fmt.Printf("gerp v%s, match regular expressions\nrun with --help for the usage\n", version)
 	os.Exit(0)
 }
 
@@ -25,13 +27,18 @@ options are:
 	-q, --quiet: do not print errors
 	-d, --hidden: do not ignore hidden files and directories
 	--: indicate that the rest of the arguments are file names
-	-h, --help: show this message and exit
+	--version: show the gerp version installed
 	`)
 	if runtime.GOOS == "windows" {
 		fmt.Println("file names can be glob patterns supporting double star")
 	} else {
 		fmt.Println("\t--glob: specify a glob pattern to use")
 	}
+	os.Exit(0)
+}
+
+func showVersion() {
+	fmt.Printf("gerp v%s\n", version)
 	os.Exit(0)
 }
 
@@ -48,7 +55,10 @@ func main() {
 	if c.FlagH {
 		showHelp()
 	}
-	// fmt.Println(c.Pattern)
+	if c.FlagVersion {
+		showVersion()
+	}
+
 	// check if stdin is piped
 	if fi, err := os.Stdin.Stat(); err == nil {
 		if (fi.Mode() & os.ModeCharDevice) == 0 {

@@ -1,5 +1,4 @@
 //go:build windows
-// +build windows
 
 package cmd
 
@@ -79,6 +78,8 @@ LOOP:
 				setflag('q', true, a)
 			case "--quiet=false":
 				setflag('q', false, a)
+			case "--version":
+				return &Cmd{FlagVersion: true}, nil
 			case "-h", "--help":
 				return &Cmd{FlagH: true}, nil
 			case "--":
