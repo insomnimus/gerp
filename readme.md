@@ -53,7 +53,7 @@ bash:
 `rm "$(which gerp)"`
 
 powershell:
-`rm (where.exe gerp)`
+`rm (where.exe gerp.exe)`
 
 manual:
 -	Locate $GOBIN or $GOPATH/bin.
