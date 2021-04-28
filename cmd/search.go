@@ -41,7 +41,7 @@ func (c *Cmd) Run() error {
 		c.filesAreFiltered = true
 	}
 
-	workerN := 4
+	workerN := 8
 	if n := runtime.NumCPU(); n > workerN {
 		workerN = n
 	}
