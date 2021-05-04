@@ -1,0 +1,10 @@
+to enable auto completions for zsh:
+run `gerp --generate-completion zsh`
+copy the output and paste into some file
+then, in your zsh profile (usually ~/zshrc), add these lines:
+
+PROG=gerp
+_CLI_ZSH_AUTOCOMPLETE_HACK=1
+source  path/to/autocomplete_file
+
+replace autocomplete_file with the file you just created

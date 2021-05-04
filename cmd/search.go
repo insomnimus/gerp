@@ -16,11 +16,11 @@ var (
 )
 
 func (c *Cmd) Run() error {
-	if c.FlagI ||
+	if c.IgnoreCase ||
 		regexp.MustCompile(`[^\w\d_\s-]`).MatchString(c.Pattern) {
 		c.isReg = true
 		var err error
-		if c.FlagI {
+		if c.IgnoreCase {
 			c.re, err = regexp.Compile("(?i)" + c.Pattern)
 		} else {
 			c.re, err = regexp.Compile(c.Pattern)
@@ -29,9 +29,15 @@ func (c *Cmd) Run() error {
 			return err
 		}
 	}
+	if fi, err := os.Stdin.Stat(); err == nil {
+		if (fi.Mode() & os.ModeCharDevice) == 0 {
+			c.NoHeader = true
+			return c.RunStdin()
+		}
+	}
 	if len(c.Files) == 0 {
 		var err error
-		c.Files, err = collectFiles(".", c.FlagD)
+		c.Files, err = collectFiles(".", c.Hidden)
 		if err != nil {
 			return err
 		}
@@ -82,13 +88,13 @@ func (c *Cmd) search(name string) {
 		return
 	}
 	// do not read if file is hidden
-	if !c.filesAreFiltered && !c.FlagD && reHidden.MatchString(name) {
+	if !c.filesAreFiltered && !c.Hidden && reHidden.MatchString(name) {
 		return
 	}
 
 	f, err := os.Open(name)
 	if err != nil {
-		if !c.FlagQ {
+		if !c.Quiet {
 			if errors.Is(err, os.ErrNotExist) || errors.Is(err, os.ErrPermission) {
 				log.Println(err)
 			}
@@ -114,12 +120,12 @@ func (c *Cmd) search(name string) {
 		if !ok {
 			continue
 		}
-		if !c.FlagN {
+		if !c.NoHeader {
 			if isFirst {
 				isFirst = false
 				fmt.Printf("# %s\n", name)
 			}
-			if !c.FlagV {
+			if !c.Invert {
 				fmt.Printf("%-4d:  %s\n", i, s)
 			} else {
 				fmt.Println(s)
@@ -133,35 +139,35 @@ func (c *Cmd) search(name string) {
 func (c *Cmd) eval(s string) (str string, ok bool) {
 	if !c.isReg {
 		if strings.Contains(s, c.Pattern) {
-			if c.FlagV {
-				if !c.FlagM {
+			if c.Invert {
+				if !c.Match {
 					return
 				}
 				return strings.ReplaceAll(s, c.Pattern, ""), true
 			}
 			// is a match, flagV false
-			if c.FlagM {
+			if c.Match {
 				return c.Pattern, true
 			}
 			return s, true
 		}
 		// does not contain
-		if c.FlagV {
+		if c.Invert {
 			return s, true
 		}
 		return
 	}
 	// is regex
 	// if not flagM, just check if regex matches
-	if !c.FlagM {
+	if !c.Match {
 		if c.re.MatchString(s) {
-			if c.FlagV {
+			if c.Invert {
 				return
 			}
 			return s, true
 		}
 		// not a match, FlagM false
-		if c.FlagV {
+		if c.Invert {
 			return s, true
 		}
 		return
@@ -169,7 +175,7 @@ func (c *Cmd) eval(s string) (str string, ok bool) {
 
 	// FlagM true
 
-	if !c.FlagV {
+	if !c.Invert {
 		text := c.re.FindString(s)
 		return text, text != ""
 	}
@@ -179,11 +185,11 @@ func (c *Cmd) eval(s string) (str string, ok bool) {
 }
 
 func (c *Cmd) RunStdin() error {
-	if c.FlagI ||
+	if c.IgnoreCase ||
 		regexp.MustCompile(`[^\w\d_\s-]`).MatchString(c.Pattern) {
 		c.isReg = true
 		var err error
-		if c.FlagI {
+		if c.IgnoreCase {
 			c.re, err = regexp.Compile("(?i)" + c.Pattern)
 		} else {
 			c.re, err = regexp.Compile(c.Pattern)
@@ -198,7 +204,7 @@ func (c *Cmd) RunStdin() error {
 		s       string
 		ok      bool
 	)
-	c.FlagN = true
+	c.NoHeader = true
 	for scanner.Scan() {
 		i++
 		if scanner.Err() != nil {
@@ -208,9 +214,9 @@ func (c *Cmd) RunStdin() error {
 		if !ok {
 			continue
 		}
-		if !c.FlagN {
+		if !c.NoHeader {
 
-			if !c.FlagV {
+			if !c.Invert {
 				fmt.Printf("%-4d:    %s\n", i, s)
 			} else {
 				fmt.Println(s)

@@ -1,0 +1,11 @@
+to enable auto completions for powershell:
+run `gerp --generate-completion powershell`
+copy the output and paste into `gerp.ps1` somewhere in your system (location doesn't matter, file name does)
+in your powershell profile add these lines, replacing <path> with the path of `gerp.ps1` you just created
+
+. <path>
+
+notice the ".", it's necessary to put a space after it.
+you can optionally do:
+
+import-module <path>

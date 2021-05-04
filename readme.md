@@ -45,6 +45,10 @@ go install
 -	Not as universal as grep, since you can find grep on pretty much any UNIX-based os by default.
 -	Does not respect your .gitignore files yet, told you it was dumb.
 
+### Does gerp ship with shell autocompletions?
+
+Yes indeed, run `gerp --help-completions` for the instructions.
+
 ### I want to uninstall gerp, how do i do it?
 
 No hard feelings, here's how:

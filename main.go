@@ -1,22 +1,32 @@
 package main
 
 import (
+	"embed"
 	"fmt"
 	"github.com/insomnimus/gerp/cmd"
+	"github.com/urfave/cli/v2"
 	"log"
 	"os"
-	"runtime"
+	"strings"
 )
 
-const version = "0.1.4"
+var (
+	//go:embed completion_help/bash.txt
+	bashCompletionMsg string
 
-func showAbout() {
-	fmt.Printf("gerp v%s, match regular expressions\nrun with --help for the usage\n", version)
-	os.Exit(0)
-}
+	//go:embed completion_help/powershell.txt
+	psCompletionMsg string
 
-func showHelp() {
-	fmt.Println(`gerp, match regular expressions
+	//go:embed completion_help/zsh.txt
+	zshCompletionMsg string
+
+	//go:embed complete/*
+	completions embed.FS
+)
+
+const version = "0.2.0"
+
+const helpMsg = `gerp, match regular expressions
 usage:
 	gerp [options] <pattern> [file...]
 options are:
@@ -26,19 +36,50 @@ options are:
 	-n, --no-header: do not print any header info
 	-q, --quiet: do not print errors
 	-d, --hidden: do not ignore hidden files and directories
-	--: indicate that the rest of the arguments are file names
-	--version: show the gerp version installed
-	`)
-	if runtime.GOOS == "windows" {
-		fmt.Println("file names can be glob patterns supporting double star")
-	} else {
-		fmt.Println("\t--glob: specify a glob pattern to use")
+	-g, --glob=<pattern>: use gerps globbing engine for searching files (not required on windows)
+	--generate-completion: generate shell autocompletions for bash, powershell or zsh
+	--help-completions: display helpabout installing shell completions
+	-V, --version: show the gerp version installed
+`
+
+func generateCompletions(sh string) error {
+	data, err := completions.ReadFile("complete/" + strings.ToLower(sh))
+	if err != nil {
+		return fmt.Errorf("unrecognized shell for autocomplete. known shells are [bash, powershell, zsh]")
 	}
-	os.Exit(0)
+	fmt.Println(string(data))
+	return nil
+}
+
+func bf(short, long, desc string, target *bool) *cli.BoolFlag {
+	return &cli.BoolFlag{
+		Name:        long,
+		Usage:       desc,
+		Destination: target,
+		Aliases:     []string{short},
+	}
+}
+
+func showCompletionHelp(sh string) {
+	switch strings.ToLower(sh) {
+	case "bash":
+		fmt.Println(bashCompletionMsg)
+	case "powershell":
+		fmt.Println(psCompletionMsg)
+	case "zsh":
+		fmt.Println(zshCompletionMsg)
+	default:
+		log.Fatalf("%s: unrecognized shell. available shells are bash, powershell and zsh", sh)
+	}
+}
+
+func showUsage(_ *cli.Context, err error, _ bool) error {
+	log.Fatalf("%s\nuse with --help for the usage", err)
+	return nil
 }
 
 func showVersion() {
-	fmt.Printf("gerp v%s\n", version)
+	fmt.Printf("gerp version %s", version)
 	os.Exit(0)
 }
 
@@ -46,29 +87,78 @@ func main() {
 	log.SetFlags(0)
 	log.SetPrefix("")
 	if len(os.Args) <= 1 {
-		showAbout()
-	}
-	c, err := cmd.Parse(os.Args[1:])
-	if err != nil {
-		log.Fatalf("error: %s\n", err)
-	}
-	if c.FlagH {
-		showHelp()
-	}
-	if c.FlagVersion {
-		showVersion()
+		log.Println("gerp, match regular expressions\nuse with --help for the usage")
+		os.Exit(0)
 	}
 
-	// check if stdin is piped
-	if fi, err := os.Stdin.Stat(); err == nil {
-		if (fi.Mode() & os.ModeCharDevice) == 0 {
-			c.RunStdin()
-			return
+	var (
+		helpCompletions string
+		flagComplete    string
+		flagVersion     bool
+	)
+
+	opt := new(cmd.Cmd)
+	run := func(c *cli.Context) error {
+		if helpCompletions != "" {
+			showCompletionHelp(helpCompletions)
+			return nil
 		}
+		if flagVersion {
+			showVersion()
+			return nil
+		}
+		if flagComplete != "" {
+			return generateCompletions(flagComplete)
+		}
+		opt.Pattern = c.Args().First()
+		opt.Args = c.Args().Tail()
+		if err := opt.Process(); err != nil {
+			return err
+		}
+		return opt.Run()
 	}
 
-	err = c.Run()
-	if err != nil {
-		log.Fatalf("error: %s\n", err)
+	app := &cli.App{
+		OnUsageError:          showUsage,
+		CustomAppHelpTemplate: helpMsg,
+		Name:                  "gerp",
+		Version:               version,
+		ArgsUsage:             "gerp [OPTIONS] [FILE...]",
+		HideHelpCommand:       true,
+		HideVersion:           true,
+		Usage:                 "match regular expressions",
+		Action:                run,
+		Flags: []cli.Flag{
+			bf("i", "ignore-case", "ignore case while matching", &opt.IgnoreCase),
+			bf("v", "invert", "print lines not matching the pattern", &opt.Invert),
+			bf("m", "match", "only print text matching the pattern (not the whole line)", &opt.Match),
+			bf("d", "hidden", "do not ignore files and directories starting with '.'", &opt.Hidden),
+			bf("q", "quiet", "do not report non-fatal errors", &opt.Quiet),
+			bf("n", "no-header", "do not print headers", &opt.NoHeader),
+			&cli.StringFlag{
+				Name:        "help-completions",
+				Value: "shell",
+				Usage:       "print help about shell autocompletions (bash, powershell or zsh)",
+				Destination: &helpCompletions,
+			},
+			&cli.StringFlag{
+				Name:        "generate-completion",
+				Usage:       "generate a shell completion script for one of [bash, powershell, zsh]",
+				Destination: &flagComplete,
+			},
+			&cli.StringFlag{
+				Name:        "glob",
+				Aliases:     []string{"g"},
+				Usage:       "use gerp's globbing engine to search files (not required on windows",
+				Destination: &opt.Glob,
+			},
+			bf("V", "version", "show gerp version and exit", &flagVersion),
+		},
+		UseShortOptionHandling: true,
+		EnableBashCompletion:   true,
+	}
+
+	if err := app.Run(os.Args); err != nil {
+		log.Fatalln(err)
 	}
 }

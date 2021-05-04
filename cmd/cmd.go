@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"regexp"
-	//"fmt"
 )
 
 var (
@@ -10,10 +9,14 @@ var (
 )
 
 type Cmd struct {
-	FlagI, FlagD, FlagM, FlagV, FlagQ, FlagN bool
-	FlagVersion, FlagH                       bool
-	Files                                    []string
-	Pattern                                  string
+	IgnoreCase, Invert bool
+	Hidden, Quiet      bool
+	NoHeader, Match    bool
+
+	Pattern string
+	Args    []string
+	Files   []string
+	Glob    string
 
 	isReg            bool
 	filesAreFiltered bool

@@ -1,0 +1,3 @@
+to enable bash auto completions:
+run `gerp --generate-completion bash`
+copy the output and paste into `/etc/bash_completion.d/gerp`
