@@ -12,7 +12,7 @@ You have two options:
 
 Go 1.16 and above:
 
-`go install github.com/insomnimus/gerp`
+`go install github.com/insomnimus/gerp@latest # or use a tag like v0.2.2`
 
 Legacy:
 
