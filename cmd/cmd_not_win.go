@@ -8,7 +8,7 @@ import (
 	"github.com/mattn/go-zglob"
 )
 
-func (c *Cmd) Process() error {
+func (cmd *Cmd) Process() error {
 	if cmd.Pattern == "" {
 		return fmt.Errorf("missing required argument: pattern")
 	}
