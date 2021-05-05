@@ -24,7 +24,7 @@ var (
 	completions embed.FS
 )
 
-const version = "0.2.2"
+const version = "0.2.3"
 
 const helpMsg = `gerp, match regular expressions
 usage:
@@ -79,7 +79,7 @@ func showUsage(_ *cli.Context, err error, _ bool) error {
 }
 
 func showVersion() {
-	fmt.Printf("gerp version %s", version)
+	fmt.Printf("gerp version %s\n", version)
 	os.Exit(0)
 }
 
