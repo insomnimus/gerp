@@ -24,7 +24,7 @@ var (
 	completions embed.FS
 )
 
-const version = "0.2.1"
+const version = "0.2.2"
 
 const helpMsg = `gerp, match regular expressions
 usage:
@@ -137,7 +137,6 @@ func main() {
 			bf("n", "no-header", "do not print headers", &opt.NoHeader),
 			&cli.StringFlag{
 				Name:        "help-completions",
-				Value: "shell",
 				Usage:       "print help about shell autocompletions (bash, powershell or zsh)",
 				Destination: &helpCompletions,
 			},
