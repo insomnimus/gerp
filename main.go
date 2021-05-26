@@ -187,7 +187,7 @@ func main() {
 						Name:        "output",
 						Aliases:     []string{"o"},
 						Required:    false,
-						Destination: &sed.Replace,
+						Destination: &sed.Output,
 					},
 				},
 			},
