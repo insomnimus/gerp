@@ -4,21 +4,18 @@ import (
 	"regexp"
 )
 
-var (
-	reFlag = regexp.MustCompile(`^\-[mvidqn]+$`)
-)
-
 type Cmd struct {
-	IgnoreCase, Invert bool
-	Hidden, Quiet      bool
-	NoHeader, Match    bool
-
-	Pattern string
-	Args    []string
-	Files   []string
-	Glob    string
-
+	re               *regexp.Regexp
+	Glob             string
+	Pattern          string
+	Args             []string
+	Files            []string
+	Quiet            bool
+	NoHeader         bool
+	Match            bool
+	Hidden           bool
+	Invert           bool
 	isReg            bool
 	filesAreFiltered bool
-	re               *regexp.Regexp
+	IgnoreCase       bool
 }
