@@ -3,11 +3,12 @@ package main
 import (
 	"embed"
 	"fmt"
-	"github.com/insomnimus/gerp/cmd"
-	"github.com/urfave/cli/v2"
 	"log"
 	"os"
 	"strings"
+
+	"github.com/insomnimus/gerp/cmd"
+	"github.com/urfave/cli/v2"
 )
 
 var (
@@ -118,6 +119,8 @@ func main() {
 		return opt.Run()
 	}
 
+	sed := new(cmd.SedArgs)
+
 	app := &cli.App{
 		OnUsageError:          showUsage,
 		CustomAppHelpTemplate: helpMsg,
@@ -155,6 +158,40 @@ func main() {
 		},
 		UseShortOptionHandling: true,
 		EnableBashCompletion:   true,
+		Commands: []*cli.Command{
+			{
+				Name:        "sed",
+				Description: "gerp sed gives you the ability to replace something with something else",
+				Aliases:     []string{"s"},
+				Action:      sed.Cmd,
+				Flags: []cli.Flag{
+					&cli.PathFlag{
+						Name:        "file",
+						Aliases:     []string{"f"},
+						Required:    false,
+						Destination: &sed.Input,
+					},
+					&cli.StringFlag{
+						Name:        "match",
+						Aliases:     []string{"m"},
+						Required:    true,
+						Destination: &sed.Match,
+					},
+					&cli.StringFlag{
+						Name:        "replace",
+						Aliases:     []string{"r"},
+						Required:    true,
+						Destination: &sed.Replace,
+					},
+					&cli.StringFlag{
+						Name:        "output",
+						Aliases:     []string{"o"},
+						Required:    false,
+						Destination: &sed.Replace,
+					},
+				},
+			},
+		},
 	}
 
 	if err := app.Run(os.Args); err != nil {
