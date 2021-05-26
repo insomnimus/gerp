@@ -110,6 +110,7 @@ func main() {
 		if flagComplete != "" {
 			return generateCompletions(flagComplete)
 		}
+
 		opt.Pattern = c.Args().First()
 		opt.Args = c.Args().Tail()
 		if err := opt.Process(); err != nil {
