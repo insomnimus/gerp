@@ -108,7 +108,7 @@ func (c *Cmd) search(name string) {
 		i       uint32
 		s       string
 		ok      bool
-		isFirst = true
+		buf     strings.Builder
 	)
 
 	for scanner.Scan() {
@@ -121,18 +121,20 @@ func (c *Cmd) search(name string) {
 			continue
 		}
 		if !c.NoHeader {
-			if isFirst {
-				isFirst = false
-				fmt.Printf("# %s\n", name)
-			}
 			if !c.Invert {
-				fmt.Printf("%-4d:  %s\n", i, s)
+				fmt.Fprintf(&buf, "%-4d:  %s\n", i, s)
 			} else {
-				fmt.Println(s)
+				fmt.Fprintln(&buf, s)
 			}
 		} else {
-			fmt.Println(s)
+			fmt.Fprintln(&buf, s)
 		}
+	}
+	if buf.Len() > 0 {
+		if !c.NoHeader {
+			fmt.Printf("# %s", name)
+		}
+		fmt.Print(buf.String())
 	}
 }
 
