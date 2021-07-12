@@ -132,9 +132,11 @@ func (c *Cmd) search(name string) {
 	}
 	if buf.Len() > 0 {
 		if !c.NoHeader {
-			fmt.Printf("# %s\n", name)
+			fmt.Printf("# %s\n%s", name, buf.String())
+		}else{
+			fmt.Print(buf.String())
 		}
-		fmt.Print(buf.String())
+		
 	}
 }
 

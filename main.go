@@ -24,7 +24,7 @@ var (
 	completions embed.FS
 )
 
-const version = "0.2.5"
+const version = "0.2.6"
 
 const helpMsg = `gerp, match regular expressions
 usage:
