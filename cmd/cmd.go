@@ -4,10 +4,6 @@ import (
 	"regexp"
 )
 
-var (
-	reFlag = regexp.MustCompile(`^\-[mvidqn]+$`)
-)
-
 type Cmd struct {
 	IgnoreCase, Invert bool
 	Hidden, Quiet      bool

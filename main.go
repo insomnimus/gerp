@@ -3,11 +3,12 @@ package main
 import (
 	"embed"
 	"fmt"
-	"github.com/insomnimus/gerp/cmd"
-	"github.com/urfave/cli/v2"
 	"log"
 	"os"
 	"strings"
+
+	"github.com/insomnimus/gerp/cmd"
+	"github.com/urfave/cli/v2"
 )
 
 var (
@@ -24,7 +25,7 @@ var (
 	completions embed.FS
 )
 
-const version = "0.2.6"
+const VERSION = "0.3.0"
 
 const helpMsg = `gerp, match regular expressions
 usage:
@@ -79,7 +80,7 @@ func showUsage(_ *cli.Context, err error, _ bool) error {
 }
 
 func showVersion() {
-	fmt.Printf("gerp version %s\n", version)
+	fmt.Printf("gerp version %s\n", VERSION)
 	os.Exit(0)
 }
 
@@ -123,7 +124,7 @@ func main() {
 		OnUsageError:          showUsage,
 		CustomAppHelpTemplate: helpMsg,
 		Name:                  "gerp",
-		Version:               version,
+		Version:               VERSION,
 		ArgsUsage:             "gerp [OPTIONS] [FILE...]",
 		HideHelpCommand:       true,
 		HideVersion:           true,

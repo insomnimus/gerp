@@ -1,10 +1,11 @@
 package cmd
 
 import (
-	"github.com/mattn/go-zglob/fastwalk"
 	"io/fs"
 	"os"
 	"sync"
+
+	"github.com/mattn/go-zglob/fastwalk"
 )
 
 func collectFiles(dir string, includeHidden bool) ([]string, error) {

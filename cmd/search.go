@@ -11,9 +11,7 @@ import (
 	"strings"
 )
 
-var (
-	reHidden = regexp.MustCompile(`\a\.|[\\/]\.`)
-)
+var reHidden = regexp.MustCompile(`\a\.|[\\/]\.`)
 
 func (c *Cmd) Run() error {
 	if c.IgnoreCase ||
@@ -31,7 +29,6 @@ func (c *Cmd) Run() error {
 	}
 	if fi, err := os.Stdin.Stat(); err == nil {
 		if (fi.Mode() & os.ModeCharDevice) == 0 {
-			c.NoHeader = true
 			return c.RunStdin()
 		}
 	}
@@ -120,23 +117,19 @@ func (c *Cmd) search(name string) {
 		if !ok {
 			continue
 		}
-		if !c.NoHeader {
-			if !c.Invert {
-				fmt.Fprintf(&buf, "%-4d:  %s\n", i, s)
-			} else {
-				fmt.Fprintln(&buf, s)
-			}
-		} else {
+		if c.NoHeader {
 			fmt.Fprintln(&buf, s)
+		} else {
+			fmt.Fprintf(&buf, "%-6d:  %s\n", i, s)
 		}
 	}
+
 	if buf.Len() > 0 {
 		if !c.NoHeader {
 			fmt.Printf("# %s\n%s", name, buf.String())
-		}else{
+		} else {
 			fmt.Print(buf.String())
 		}
-		
 	}
 }
 
@@ -202,13 +195,14 @@ func (c *Cmd) RunStdin() error {
 			return err
 		}
 	}
+
 	var (
 		scanner = bufio.NewScanner(os.Stdin)
 		i       uint32
 		s       string
 		ok      bool
 	)
-	c.NoHeader = true
+
 	for scanner.Scan() {
 		i++
 		if scanner.Err() != nil {
@@ -218,15 +212,10 @@ func (c *Cmd) RunStdin() error {
 		if !ok {
 			continue
 		}
-		if !c.NoHeader {
-
-			if !c.Invert {
-				fmt.Printf("%-4d:    %s\n", i, s)
-			} else {
-				fmt.Println(s)
-			}
-		} else {
+		if c.NoHeader {
 			fmt.Println(s)
+		} else {
+			fmt.Printf("%-6d:    %s\n", i, s)
 		}
 	}
 	return nil
