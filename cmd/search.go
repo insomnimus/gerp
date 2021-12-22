@@ -29,6 +29,7 @@ func (c *Cmd) Run() error {
 	}
 	if fi, err := os.Stdin.Stat(); err == nil {
 		if (fi.Mode() & os.ModeCharDevice) == 0 {
+			c.NoHeader = true
 			return c.RunStdin()
 		}
 	}
@@ -80,8 +81,7 @@ func (c *Cmd) search(name string) {
 	// do not read exe, object, bin files
 	if !c.filesAreFiltered && (strings.HasSuffix(name, ".exe") ||
 		strings.HasSuffix(name, ".bin") ||
-		strings.HasSuffix(name, ".o") ||
-		strings.HasSuffix(name, ".a")) {
+		strings.HasSuffix(name, ".o")) {
 		return
 	}
 	// do not read if file is hidden
@@ -120,7 +120,7 @@ func (c *Cmd) search(name string) {
 		if c.NoHeader {
 			fmt.Fprintln(&buf, s)
 		} else {
-			fmt.Fprintf(&buf, "%-6d:  %s\n", i, s)
+			fmt.Fprintf(&buf, "%-6d|  %s\n", i, s)
 		}
 	}
 
